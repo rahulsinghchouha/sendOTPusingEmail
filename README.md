@@ -126,3 +126,80 @@ Common Ports:
 Port 25: Traditionally used for SMTP, but often blocked by ISPs to reduce spam.
 Port 465: Used for SMTP over SSL (deprecated but still used by some services).
 Port 587: Used for SMTP over TLS (recommended for most secure email connections).
+
+====================>
+pre and post hook user schema
+pre and post hook mongoose schema
+ChatGPT
+In Mongoose, hooks (also known as middleware) are functions that are executed before or after certain operations are performed on documents. These hooks are useful for running custom logic, validation, or other tasks related to the lifecycle of a document. Mongoose supports two types of hooks: pre and post.
+
+1. Pre Hooks
+Pre hooks are executed before a certain operation (e.g., save, validate, remove) is performed. They are useful for modifying the document or performing actions that need to happen before the main operation.
+
+Example: Pre-Save Hook
+Suppose you want to hash a password before saving a user document:
+
+javascript
+Copy code
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
+const userSchema = new mongoose.Schema({
+    username: String,
+    password: String
+});
+
+// Pre-save hook to hash the password before saving
+userSchema.pre('save', async function(next) {
+    if (this.isModified('password')) { // Check if the password field is modified
+        try {
+            const salt = await bcrypt.genSalt(10);
+            this.password = await bcrypt.hash(this.password, salt);
+            next(); // Proceed to save the document
+        } catch (error) {
+            next(error); // Pass any errors to the next middleware
+        }
+    } else {
+        next(); // Proceed to save if no password change
+    }
+});
+
+const User = mongoose.model('User', userSchema);
+In this example:
+
+pre('save'): The hook is executed before the document is saved to the database.
+this: Refers to the document being processed.
+next(): Calls the next middleware in the stack or proceeds with the save operation.
+2. Post Hooks
+Post hooks are executed after a certain operation has been performed. They are useful for actions that should occur after the main operation is complete, such as logging or cleanup.
+
+Example: Post-Save Hook
+Suppose you want to log a message after a user document is successfully saved:
+
+javascript
+Copy code
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+    username: String,
+    password: String
+});
+
+// Post-save hook to log a message after saving
+userSchema.post('save', function(doc, next) {
+    console.log(`User ${doc.username} has been saved successfully.`);
+    next(); // Proceed to the next middleware or end the request
+});
+
+const User = mongoose.model('User', userSchema);
+In this example:
+
+post('save'): The hook is executed after the document has been saved.
+doc: The document that was saved.
+next(): Calls the next middleware or completes the operation.
+Common Hook Events
+save: Triggered before or after saving a document.
+validate: Triggered before or after validating a document.
+remove: Triggered before or after removing a document.
+update: Triggered before or after updating a document.
+init: Triggered when a document is initialized from the database.
