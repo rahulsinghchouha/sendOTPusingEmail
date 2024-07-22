@@ -79,7 +79,8 @@ const nodemailer = require('nodemailer');
 
 // Create a transporter object
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp',
+    port:" "
     auth: {
         user: 'your-email@gmail.com',
         pass: 'your-email-password'
@@ -108,3 +109,20 @@ HTML Templates: Use template engines like EJS or Handlebars to generate HTML con
 Secure Authentication: Use OAuth2 for secure authentication, especially for Gmail or other providers that support OAuth.
 Summary
 Nodemailer provides a straightforward and flexible way to send emails from a Node.js application. It supports multiple transport methods, allows sending both plain text and HTML emails, and includes features for attachments and secure authentication. This makes it a powerful tool for integrating email functionality into your applications.
+
+=============>
+what is host and port in nodemailer create transport
+ChatGPT
+In Nodemailer, when you create a transporter object to send emails, the host and port are used to specify the email server details for the SMTP transport. Here’s what they mean:
+
+Host
+Definition: The host is the domain name or IP address of the email server that Nodemailer will connect to for sending emails.
+Example Values:
+For Gmail, the SMTP server host is smtp.gmail.com.
+For Outlook, the SMTP server host is smtp.office365.com.
+Port
+Definition: The port is the network port on the email server that Nodemailer will use to connect to the SMTP server. Different ports are used for different types of connections.
+Common Ports:
+Port 25: Traditionally used for SMTP, but often blocked by ISPs to reduce spam.
+Port 465: Used for SMTP over SSL (deprecated but still used by some services).
+Port 587: Used for SMTP over TLS (recommended for most secure email connections).
