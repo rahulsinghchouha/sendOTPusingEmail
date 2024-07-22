@@ -242,3 +242,40 @@ Error Handling: If an error occurs during asynchronous operations, it is passed 
 Summary
 async: Used to handle asynchronous operations within hooks, making it possible to use await to pause execution until Promises resolve.
 next(): A callback function that signals when the hook has completed its work, either by proceeding to the next middleware or handling errors.
+
+=============>
+In the context of Mongoose, which is often used with Express for Node.js applications, isNew is a property available on Mongoose documents that indicates whether a document is new or has been saved to the database previously. It’s not directly part of Express itself but is commonly used in applications that use Mongoose for data modeling.
+
+Understanding isNew
+**1. Definition:
+
+isNew: A boolean property on a Mongoose document that indicates if the document instance is new (i.e., it has not been saved to the database yet).
+**2. Usage:
+
+Determining Document State: You can use isNew to check if a document is new before performing certain operations, like validating or applying specific logic only for new documents.
+Conditional Logic: In hooks or other logic, you might want to differentiate between new documents and existing ones.
+Example Usage of isNew
+Here’s an example of how isNew might be used within a Mongoose hook to apply different logic based on whether a document is new or not:
+
+javascript
+Copy code
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+    username: String,
+    email: String
+});
+
+// Pre-save hook to apply logic based on whether the document is new
+userSchema.pre('save', function(next) {
+    if (this.isNew) {
+        console.log('This is a new document. Performing actions for new documents.');
+        // Add any initialization logic for new documents here
+    } else {
+        console.log('This document already exists. Performing actions for existing documents.');
+        // Add any logic for existing documents here
+    }
+    next(); // Proceed to save the document
+});
+
+const User = mongoose.model('User', userSchema);
