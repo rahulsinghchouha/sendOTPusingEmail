@@ -203,3 +203,42 @@ validate: Triggered before or after validating a document.
 remove: Triggered before or after removing a document.
 update: Triggered before or after updating a document.
 init: Triggered when a document is initialized from the database.
+
+===========>
+Purpose of next()
+1. What is next()?
+
+Callback Function: In Mongoose hooks, next() is a callback function used to signal that the hook has completed its work. It’s a way to pass control to the next middleware in the stack or proceed with the main operation.
+Error Handling: If there’s an error, you can pass the error to next() so that Mongoose knows that something went wrong.
+2. How next() Works
+
+Proceed to Next Middleware: After completing its tasks, you call next() to continue with the next middleware function or proceed with the main operation (like saving the document).
+Error Propagation: If you pass an error to next(), Mongoose will handle it appropriately, often by aborting the main operation and reporting the error.
+Example: Using next() for Error Handling
+
+javascript
+Copy code
+const userSchema = new mongoose.Schema({
+    username: String,
+    password: String
+});
+
+// Pre-save hook with error handling
+userSchema.pre('save', async function(next) {
+    try {
+        if (this.isModified('password')) {
+            const salt = await bcrypt.genSalt(10);
+            this.password = await bcrypt.hash(this.password, salt);
+        }
+        next(); // Proceed to save the document
+    } catch (error) {
+        next(error); // Pass any errors to Mongoose
+    }
+});
+In this example:
+
+Successful Execution: If the hook completes without errors, next() is called to proceed with saving the document.
+Error Handling: If an error occurs during asynchronous operations, it is passed to next(error), which stops the save operation and triggers error handling.
+Summary
+async: Used to handle asynchronous operations within hooks, making it possible to use await to pause execution until Promises resolve.
+next(): A callback function that signals when the hook has completed its work, either by proceeding to the next middleware or handling errors.
